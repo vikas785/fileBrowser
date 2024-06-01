@@ -26,57 +26,74 @@ import ArticleIcon from '@mui/icons-material/Article';
 
 import data from '../data.json'
 
-import { Data, createData, DriveDataType, Order, descendingComparator, getComparator, stableSort, HeadCell, headCells,EnhancedTableProps, EnhancedTableToolbarProps } from '../util';
+import { Data, createData, DriveDataType, Order, getComparator, stableSort, fileDetail, breadCrumbDataType } from '../util';
 import EnhancedTableHead from './EnhancedTableHead';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
-
-
-
-//   const rows = [
-//     createData(1, 'Cupcake',2048, "folder", 2023),
-//     createData(2, 'Donut',2042, "folder", 2023),
-//     createData(3, 'Eclair',2046, "folder", 2023),
-//     createData(4, 'Frozen yoghurt',2040, "folder", 2023),
-//     createData(5, 'Gingerbread',2030, "folder", 2023),
-//     createData(6, 'Honeycomb',2020, "folder", 2023),
-//     createData(7, 'Ice cream sandwich',2050, "folder", 2023),
-//     // createData(8, 'Jelly Bean', 375, 0.0, 94, 0.0),
-//     // createData(9, 'KitKat', 518, 26.0, 65, 7.0),
-//     // createData(10, 'Lollipop', 392, 0.2, 98, 0.0),
-//     // createData(11, 'Marshmallow', 318, 0, 81, 2.0),
-//     // createData(12, 'Nougat', 360, 19.0, 9, 37.0),
-//     // createData(13, 'Oreo', 437, 18.0, 63, 4.0),
-//   ];
-
-
- let rows = [
-    createData(1, 'Cupcake',"2048", "folder", 2023),
- ]
-
-
-let driveData: { [key: string]: DriveDataType } = data.app.children[0]
-let i=2;
-for(let document in driveData)
-{   
-  rows.push(createData(i, document, driveData[document].size, driveData[document].type, 2023))
-  i++;
-    
-    // console.log(driveData[document].type)
-}
-
-
+import EnhancedTableBody from './EnhancedTableBody';
+import BreadCrumb from './BreadCrumb';
 
 
 const Main2 = () => {
-    const [order, setOrder] = React.useState<Order>('asc');
+  const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('size');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rows, setRows] = React.useState<Data[]>([])
+  const [currentDirectory, setCurrentDirectory] = React.useState<string>('app.children[0]')
+  // const [breadCrumbData, setBreadCrumbData] = React.useState<string[]>(['app'])
 
-//   console.log(data.app.children)
-  let driveData = data.app.children;
+  const breadCrumbData : breadCrumbDataType[] = [
+    {
+      label: 'app',
+      path:'app.children[0]'
+    },
+    {
+      label:'main',
+      path:'app.children[0].main.children[0]'
+    }
+  ]
+
+function getValueByPath<T>(obj: any, path: string): fileDetail {
+  const parts: string[] = path.split('.');
+  let value: any = obj;
+  for (const part of parts) {
+  
+    if(part === "children[0]")
+    {
+      value = value["children"];
+      value = value[0]
+    }
+    else value = value[part];
+    
+    // console.log(part,value["children[0]"])
+    // debugger
+  }
+  return value;
+}
+
+  // const track = [
+  //   {
+  //     label: 'root',
+  //     path: 'app.children[0]',
+  //   }
+  // ]
+
+  useEffect(()=>{
+    // data.app.children[0].main.children[0].src.children[0]
+    // console.log(getValueByPath<string>(data, "app.children[0].main.children[0].src.children[0].main.children[0].public.children[0]"))
+    let driveData: fileDetail = getValueByPath<string>(data, currentDirectory)
+  let i=1;
+  let driveDataArray : Data[]= []
+  for(let document in driveData){
+    driveDataArray.push(createData(i, document, driveData[document].size?? "1001MB" , driveData[document].type, 2023))
+    
+    i++
+  }
+  setRows(driveDataArray)
+
+  },[currentDirectory])
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -96,11 +113,9 @@ const Main2 = () => {
     setSelected([]);
   };
 
-  const handleDoubleClick= (event: React.MouseEvent<unknown>, id: number)=>{
-    rows = [
-      createData(1, 'Cupcake',"2048", "folder", 2023),
-   ]
-    console.log("folder click",id)
+  const handleDoubleClick= (event: React.MouseEvent<unknown>, id: number, name: string)=>{
+    setCurrentDirectory(prevPath => prevPath + '.'+ name +'.children[0]')
+    // setBreadCrumbData(prev => [...prev,name])
   }
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
@@ -147,102 +162,62 @@ const Main2 = () => {
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
-    [order, orderBy, page, rowsPerPage],
+    [order, orderBy, page, rowsPerPage,rows],
   );
+
+  // const breadCrumbData = ['app']
 
 
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.id);
-                const labelId = `enhanced-table-checkbox-${index}`;
-
-                return (
-                  <TableRow
-                    hover
-                    onDoubleClick={(event) =>  handleDoubleClick(event, row.id)}
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell padding="checkbox"
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    >
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    >
-                        {row.type === 'folder'?
-                        <FolderIcon style={{ color: '#FFDD99' }} />:
-                        <ArticleIcon style={{ color: '#0096FF' }} />
-                        }
-                         &nbsp;
-
-                      {row.name}
-                    </TableCell>
-                    <TableCell >{row.size}</TableCell>
-                    <TableCell >{row.type}</TableCell>
-                    <TableCell >{row.modified}</TableCell>
-                  </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
+      {
+        rows.length==0?
+         "Loading....":
+         <>
+         <Paper sx={{ width: '100%', mb: 2 }}>
+         <EnhancedTableToolbar numSelected={selected.length} />
+         <BreadCrumb breadCrumbData={breadCrumbData} setCurrentDirectory={setCurrentDirectory} />
+         <TableContainer>
+           <Table
+             sx={{ minWidth: 750 }}
+             aria-labelledby="tableTitle"
+             size={dense ? 'small' : 'medium'}
+           >
+             <EnhancedTableHead
+               numSelected={selected.length}
+               order={order}
+               orderBy={orderBy}
+               onSelectAllClick={handleSelectAllClick}
+               onRequestSort={handleRequestSort}
+               rowCount={rows.length}
+             />
+             <EnhancedTableBody 
+             visibleRows={visibleRows} 
+             isSelected={isSelected} 
+             handleDoubleClick={handleDoubleClick}
+             handleClick={handleClick}
+             emptyRows={emptyRows}
+             dense={dense}
+             />
+           </Table>
+         </TableContainer>
+         <TablePagination
+           rowsPerPageOptions={[5, 10, 25]}
+           component="div"
+           count={rows.length}
+           rowsPerPage={rowsPerPage}
+           page={page}
+           onPageChange={handleChangePage}
+           onRowsPerPageChange={handleChangeRowsPerPage}
+         />
+       </Paper>
+       <FormControlLabel
+         control={<Switch checked={dense} onChange={handleChangeDense} />}
+         label="Dense padding"
+       /> </>
+      }
+      
     </Box>
   )
 }

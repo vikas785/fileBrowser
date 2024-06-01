@@ -20,10 +20,19 @@ export function createData(
     };
   }
 
+export interface fileDetail{
+    [key: string]: DriveDataType
+  }
+
   export interface DriveDataType {
     type: string;
-    size: string;
-    children?:string[];
+    size?: string;
+    children?:fileDetail[];
+}
+
+export interface breadCrumbDataType {
+  label: string;
+  path: string;
 }
 
 
