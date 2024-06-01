@@ -1,0 +1,29 @@
+,
+            "main":{
+                "type":"folder",
+                "children":[{
+                    "src":{
+                        "type":"folder",
+                        "children":[{
+                            "file1":{
+                                "type":"file",
+                                "size": "106.56MB"
+                            },
+                            "file2":{
+                                "type":"file",
+                                "size": "106.56MB"
+                            },
+                            "main":{
+                                "type":"folder",
+                                "children":[{
+                                    "public":{
+                                        "type":"folder",
+                                        "children":[{}]
+                                    }
+                                }]
+                            }
+                        }]
+                    }
+
+                }]
+            }
