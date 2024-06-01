@@ -1,18 +1,10 @@
 import * as React from 'react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { ReactNode } from 'react';
 import { breadCrumbDataType } from '../util';
-
-
-// function handleClick(path:string) {
-// //   event.preventDefault();
-// // setCurrentDirectory(path)
-// //   console.info('You clicked a breadcrumb.',path);
-// }
 
 const BreadCrumb: React.FC<{
     breadCrumbData: breadCrumbDataType[];

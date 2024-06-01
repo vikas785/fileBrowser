@@ -1,32 +1,15 @@
 import React, { useEffect } from 'react'
-import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { visuallyHidden } from '@mui/utils';
-import FolderIcon from '@mui/icons-material/Folder';
-import ArticleIcon from '@mui/icons-material/Article';
 
 import data from '../data.json'
 
-import { Data, createData, DriveDataType, Order, getComparator, stableSort, fileDetail, breadCrumbDataType } from '../util';
+import { Data, createData, Order, getComparator, stableSort, fileDetail, breadCrumbDataType } from '../util';
 import EnhancedTableHead from './EnhancedTableHead';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
 import EnhancedTableBody from './EnhancedTableBody';
@@ -47,17 +30,6 @@ const Main2 = () => {
   )
   const [directoryLevel,setDirectoryLevel] = React.useState<number>(0)
 
-  // const breadCrumbData : breadCrumbDataType[] = [
-  //   {
-  //     label: 'app',
-  //     path:'app.children[0]'
-  //   },
-  //   {
-  //     label:'main',
-  //     path:'app.children[0].main.children[0]'
-  //   }
-  // ]
-
 function getValueByPath<T>(obj: any, path: string): fileDetail {
   const parts: string[] = path.split('.');
   let value: any = obj;
@@ -70,22 +42,12 @@ function getValueByPath<T>(obj: any, path: string): fileDetail {
     }
     else value = value[part];
     
-    // console.log(part,value["children[0]"])
-    // debugger
   }
   return value;
 }
 
-  // const track = [
-  //   {
-  //     label: 'root',
-  //     path: 'app.children[0]',
-  //   }
-  // ]
 
   useEffect(()=>{
-    // data.app.children[0].main.children[0].src.children[0]
-    // console.log(getValueByPath<string>(data, "app.children[0].main.children[0].src.children[0].main.children[0].public.children[0]"))
     let driveData: fileDetail = getValueByPath<string>(data, currentDirectory)
   let i=1;
   let driveDataArray : Data[]= []
@@ -165,7 +127,6 @@ function getValueByPath<T>(obj: any, path: string): fileDetail {
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
@@ -177,9 +138,6 @@ function getValueByPath<T>(obj: any, path: string): fileDetail {
       ),
     [order, orderBy, page, rowsPerPage,rows],
   );
-
-  // const breadCrumbData = ['app']
-
 
 
   return (
