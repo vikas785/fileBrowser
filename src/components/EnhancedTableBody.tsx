@@ -40,7 +40,7 @@ const EnhancedTableBody:
               return (
                 <TableRow
                   hover
-                  onDoubleClick={(event) =>  handleDoubleClick(event, row.id, row.name)}
+                  onDoubleClick={row.type === 'folder' ? (event) =>  handleDoubleClick(event, row.id, row.name): undefined}
                   // onDoubleClick={(event) =>  setCurrentDirectory(prevPath => prevPath + '.'+ row.name +'.children[0]')}
                   aria-checked={isItemSelected}
                   tabIndex={-1}

@@ -42,18 +42,21 @@ const Main2 = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState<Data[]>([])
   const [currentDirectory, setCurrentDirectory] = React.useState<string>('app.children[0]')
-  // const [breadCrumbData, setBreadCrumbData] = React.useState<string[]>(['app'])
+  const [breadCrumbData, setBreadCrumbData] = React.useState<breadCrumbDataType[]>(
+    [{  level: 0, label: 'app', path:'app.children[0]'  }]
+  )
+  const [directoryLevel,setDirectoryLevel] = React.useState<number>(0)
 
-  const breadCrumbData : breadCrumbDataType[] = [
-    {
-      label: 'app',
-      path:'app.children[0]'
-    },
-    {
-      label:'main',
-      path:'app.children[0].main.children[0]'
-    }
-  ]
+  // const breadCrumbData : breadCrumbDataType[] = [
+  //   {
+  //     label: 'app',
+  //     path:'app.children[0]'
+  //   },
+  //   {
+  //     label:'main',
+  //     path:'app.children[0].main.children[0]'
+  //   }
+  // ]
 
 function getValueByPath<T>(obj: any, path: string): fileDetail {
   const parts: string[] = path.split('.');
@@ -113,9 +116,19 @@ function getValueByPath<T>(obj: any, path: string): fileDetail {
     setSelected([]);
   };
 
+  useEffect(()=>{
+    console.log(breadCrumbData)
+  },[breadCrumbData])
+
   const handleDoubleClick= (event: React.MouseEvent<unknown>, id: number, name: string)=>{
+    let newPath = currentDirectory + '.'+ name +'.children[0]'
+    setDirectoryLevel(prev=>{
+      let newId = prev+1
+      setBreadCrumbData(prev => [...prev,{level: newId,label:name, path: newPath}])
+      return newId
+    }) 
     setCurrentDirectory(prevPath => prevPath + '.'+ name +'.children[0]')
-    // setBreadCrumbData(prev => [...prev,name])
+    
   }
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
@@ -177,7 +190,7 @@ function getValueByPath<T>(obj: any, path: string): fileDetail {
          <>
          <Paper sx={{ width: '100%', mb: 2 }}>
          <EnhancedTableToolbar numSelected={selected.length} />
-         <BreadCrumb breadCrumbData={breadCrumbData} setCurrentDirectory={setCurrentDirectory} />
+         <BreadCrumb breadCrumbData={breadCrumbData} setCurrentDirectory={setCurrentDirectory} setBreadCrumbData={setBreadCrumbData} />
          <TableContainer>
            <Table
              sx={{ minWidth: 750 }}

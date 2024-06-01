@@ -31,6 +31,7 @@ export interface fileDetail{
 }
 
 export interface breadCrumbDataType {
+  level: number;
   label: string;
   path: string;
 }
